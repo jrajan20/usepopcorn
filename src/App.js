@@ -67,17 +67,20 @@ export default function App() {
       <NumResults movies={movies}/>
     </NavBar>
     <Main movies={movies}>
-      <Box>
+      {/* <Box>
         <MovieList movies={movies}/>
-      </Box>
-      <Box>
+      </Box> */}
+      <Box element={<MovieList movies={movies}/>}/>
+      <Box element={
+        <>
         <WatchedSummary watched={watched} />
               <WatchedList>
                 {watched.map((movie) => (
                  <WatchedMovie movie={movie}/>
                 ))}
               </WatchedList>
-      </Box>
+        </>
+      }/>
     </Main>
   
       
@@ -239,7 +242,7 @@ function WatchedList({children}){
               </ul>
   )
 }
-function Box({children}){
+function Box({element}){
 
   const [isOpen, setIsOpen] = useState(true);
 
@@ -254,11 +257,9 @@ function Box({children}){
           >
             {isOpen ? "–" : "+"}
           </button>
-          {isOpen && (
-            <>
-             {children}
-            </>
-          )}
+          {isOpen && 
+             element
+          }
         </div>
   )
 
