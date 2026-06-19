@@ -49,17 +49,54 @@ const tempWatchedData = [
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-function NavBar({movies}){
+
+export default function App() {
+ const [movies, setMovies] = useState(tempMovieData);
+ 
+  function addMovies(){
+
+  }
+
+  return (
+    <>
+     
+    <NavBar>
+      <Logo/>
+      <Search/>
+      <NumResults movies={movies}/>
+    </NavBar>
+    <Main movies={movies}>
+      <ListBox movies={movies}>
+        <MovieList movies={movies}/>
+      </ListBox>
+      <WatchedBox movies={movies}/>
+    </Main>
+  
+      
+
+       
+    </>
+  );
+}
+
+
+function NavBar({movies, children}){
   const [query, setQuery] = useState("");
  return( 
       <nav className="nav-bar">
-        <Logo/>
-        <Search/>
-        <NumResults movies={movies}/>
+      {children}
       </nav>
  )
 }
+function Main({children}){
 
+ return (
+   <main className="main">
+        {children}
+        
+      </main>
+ )
+}
 function NumResults({movies}){
   return(
      <p className="num-results">
@@ -118,7 +155,7 @@ function MovieList({movies}){
   )
    
 }
-function ListBox({movies}){
+function ListBox({ children}){
    
     const [isOpen1, setIsOpen1] = useState(true);
 
@@ -130,9 +167,8 @@ function ListBox({movies}){
           >
             {isOpen1 ? "–" : "+"}
           </button>
-          {isOpen1 && (
-           <MovieList movies={movies}/>
-          )}
+          {isOpen1 && 
+          children}
         </div>
   )
 }
@@ -188,12 +224,10 @@ function WatchedMovie({movie}){
                   </li>
   )
 }
-function WatchedList({watched}){
+function WatchedList({children}){
   return(
     <ul className="list">
-                {watched.map((movie) => (
-                 <WatchedMovie movie={movie}/>
-                ))}
+                {children}
               </ul>
   )
 }
@@ -217,41 +251,15 @@ function WatchedBox(){
           {isOpen2 && (
             <>
              <WatchedSummary watched={watched} />
-              <WatchedList watched={watched}/>
+              <WatchedList watched={watched}>
+                {watched.map((movie) => (
+                 <WatchedMovie movie={movie}/>
+                ))}
+              </WatchedList>
             </>
           )}
         </div>
   )
 }
-function Main({movies}){
 
 
-
-
- return (
-   <main className="main">
-        <ListBox movies={movies}/>
-        <WatchedBox movies={movies}/>
-        
-      </main>
- )
-}
-export default function App() {
- const [movies, setMovies] = useState(tempMovieData);
- 
-  function addMovies(){
-
-  }
-
-  return (
-    <>
-     
-    <NavBar movies={movies}/>
-    <Main movies={movies}/>
-  
-      
-
-       
-    </>
-  );
-}
