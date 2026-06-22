@@ -37,6 +37,7 @@ export default function StarRating({maxRating = 5,color ="#fcc419", size=48, mes
     function handleRating(rating){
         setRating(rating);
         onSetRating(rating);
+       
     }
 
     function handleHover(i){

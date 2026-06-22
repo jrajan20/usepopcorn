@@ -1,4 +1,5 @@
 import { useState, useEffect} from "react";
+import StarRating from "./StarRating";
 
 const tempMovieData = [
   {
@@ -68,6 +69,11 @@ function handleCloseMovie(){
   setSelected(null);
 }
 
+function addWatchedMovie(movie){
+  setWatched(watched => [...watched,movie]);
+
+}
+
   useEffect( function(){
   async function fetchMovies(){
    try{
@@ -134,13 +140,13 @@ function handleCloseMovie(){
         
       <Box>
         {
-          selected ? <MovieDetails selectedId={selected} onCloseMovie={handleCloseMovie}/>
+          selected ? <MovieDetails selectedId={selected} onCloseMovie={handleCloseMovie} onWatchedMovie={addWatchedMovie}/>
           :
           <>
-           <WatchedSummary watched={watched} />
+           <WatchedSummary watched={watched}  />
           <WatchedList>
-                  {watched.map((movie) => (
-                  <WatchedMovie movie={movie}/>
+                  {watched.map((watchedMovie) => (
+                  <WatchedMovie movie={watchedMovie}/>
                   ))}
           </WatchedList>
           </>
@@ -157,25 +163,45 @@ function handleCloseMovie(){
   );
 }
 
-function MovieDetails({selectedId, onCloseMovie}){
+function MovieDetails({selectedId, onCloseMovie, onWatchedMovie}){
 
   const [movie, setMovie] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [userRating, setUserRating] = useState(0);
 
   const {Title: title, Year: year, Poster: poster, Runtime: runtime, imdbRating, Plot: plot, Released: Released, Actors: Actors, Director: Director, Genre: genre} = movie
 
   useEffect(function(){
      async function getMovieDetails(){
-  
+      setIsLoading(true);
       const res = await fetch(`http://www.omdbapi.com/?&apikey=${key}&i=${selectedId}`);
       const data = await res.json();
       setMovie(data);
+      setIsLoading(false);
   }
   getMovieDetails();
-},[])
+},[selectedId]);
+
+function handleAdd(){
+  const newWatchedMove = {
+    imdbId: selectedId,
+    title,
+    year,
+    poster,
+    imdbRating: Number(imdbRating),
+    runtime: Number(runtime.split(" ").at(0)),
+    userRating,
+  };onCloseMovie();
+
+  onWatchedMovie(newWatchedMove);
+
+}
 
   return(
     <div className="details">
-      <header>
+      {isLoading ? <Loader/>:
+      <>
+       <header>
          <button className="btn-back" onClick={onCloseMovie}>
         &larr;
       </button>
@@ -191,10 +217,18 @@ function MovieDetails({selectedId, onCloseMovie}){
   
       </header>
      <section>
+      <div className="rating">
+        <StarRating maxRating={10} size={24} onSetRating={setUserRating}/>
+       {userRating > 0 && <button className="btn-add" onClick={()=> handleAdd()}>+ Add to List</button>}
+      </div>
       <p><em>{plot}</em></p>
         <p>Starring {Actors}</p>
         <p> Directed By {Director}</p>
      </section>
+      
+      </>}
+
+     
     </div>
   );
 }
@@ -330,8 +364,8 @@ function WatchedSummary({watched}){
 function WatchedMovie({movie}){
   return(
      <li key={movie.imdbID}>
-                    <img src={movie.Poster} alt={`${movie.Title} poster`} />
-                    <h3>{movie.Title}</h3>
+                    <img src={movie.poster} alt={`${movie.title} poster`} />
+                    <h3>{movie.title}</h3>
                     <div>
                       <p>
                         <span>⭐️</span>
