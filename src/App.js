@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 
 const tempMovieData = [
   {
@@ -47,16 +47,54 @@ const tempWatchedData = [
   },
 ];
 
+const key = 'cd762379';
+const query ='interstellar';
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
- const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+ const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error,setError] = useState('');
+  
+  
+  useEffect( function(){
+  async function fetchMovies(){
+   try{
+      setIsLoading(true);
+      const res = await fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${key}&s=${query}`)
+      
+      if(!res.ok){
+        throw new Error("Something went wrong! Unable to fetch movies");
+      }
 
-  function addMovies(){
-
+      
+      const data = await res.json();
+      if(data.Response === 'False'){
+        throw new Error("Movie not found!");
+        
+      }
+      setMovies(data.Search);
+     
+      console.log(data);
+    } catch(err){
+      console.log(err.message);
+      setError(err.message);
+    }  finally{
+       setIsLoading(false);
+    }
+   
   }
+  fetchMovies();
+}, []);
+
+ function ErrorMessage({message}){
+  return(
+    <p className="error">
+      <span>🛑</span> {message}</p>
+  )    
+ }
 
   return (
     <>
@@ -67,20 +105,26 @@ export default function App() {
       <NumResults movies={movies}/>
     </NavBar>
     <Main movies={movies}>
-      {/* <Box>
-        <MovieList movies={movies}/>
-      </Box> */}
-      <Box element={<MovieList movies={movies}/>}/>
-      <Box element={
-        <>
+      <Box>
+        {isLoading && <Loader/>}
+        {!isLoading && !error && <MovieList movies={movies}/>}
+        {error && <ErrorMessage message={error}/>}
+      </Box>
+
+      {/* <Box element={
+        isLoading && !error && 
+        <MovieList movies={movies}/>}/> */}
+        
+      <Box>
+        
         <WatchedSummary watched={watched} />
-              <WatchedList>
+        <WatchedList>
                 {watched.map((movie) => (
                  <WatchedMovie movie={movie}/>
                 ))}
-              </WatchedList>
-        </>
-      }/>
+        </WatchedList>
+        
+      </Box>
     </Main>
   
       
@@ -90,6 +134,11 @@ export default function App() {
   );
 }
 
+function Loader(){
+return(
+  <p className="loader">Loading...</p>
+)
+}
 
 function NavBar({movies, children}){
   const [query, setQuery] = useState("");
@@ -242,7 +291,7 @@ function WatchedList({children}){
               </ul>
   )
 }
-function Box({element}){
+function Box({children}){
 
   const [isOpen, setIsOpen] = useState(true);
 
@@ -258,7 +307,7 @@ function Box({element}){
             {isOpen ? "–" : "+"}
           </button>
           {isOpen && 
-             element
+             children
           }
         </div>
   )

@@ -1,6 +1,6 @@
 import { useState, useEffect, use } from "react";
 
-const key = 'cd762379';
+
 
 // const tempMovieData = [
 //   {
@@ -58,11 +58,7 @@ export default function App() {
 
 
 
-useEffect(function(){
-  fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${key}&s=interstellar`)
-  .then((res)=> res.json())
-  .then((data) => setMovies(data.Search));
-}, [])
+
 
   function addMovies(){
  
