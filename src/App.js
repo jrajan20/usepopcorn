@@ -54,6 +54,7 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
+
    const [query, setQuery] = useState("");
  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
@@ -78,6 +79,7 @@ function handleDeleteWatched(id){
   setWatched(watched => watched.filter(movie => movie.imdbID !== id));
 
 }
+
 
   useEffect( function(){
 
@@ -121,7 +123,7 @@ function handleDeleteWatched(id){
     setError("");
     return;
   }
-
+  handleCloseMovie();
   fetchMovies();
 
   return function(){
@@ -129,6 +131,7 @@ function handleDeleteWatched(id){
   }
  
 }, [query]);
+
 
  function ErrorMessage({message}){
   return(
@@ -191,6 +194,26 @@ function MovieDetails({selectedId, onCloseMovie, onWatchedMovie, watched}){
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(movie => movie.imdbID === selectedId )?.userRating;
   console.log(isWatched);
+
+
+ useEffect(function(){
+
+    function elCallBack(e){
+      if(e.code === "Escape"){
+          onCloseMovie();
+         
+        }
+
+      }
+      document.addEventListener('keydown', elCallBack)
+      
+
+      return function(){
+        document.removeEventListener('keydown',elCallBack)
+      }
+
+    }
+  ,[onCloseMovie]);
 
   useEffect(function(){
      async function getMovieDetails(){
