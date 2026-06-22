@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import StarRating from './StarRating';
 import { useState } from "react";
 
-// import './index.css';
-// import App from './App';
+import './index.css';
+import App from './App v2';
 
 function Test(){
   const [movieRating, setMovieRating] = useState(0);
@@ -21,10 +21,10 @@ function Test(){
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <App/> */}
+    <App/>
     
         <StarRating maxRating={5} size={23} color="red" messages={['Terrible', 'Bad', 'Average', 'Good', 'Excelent']} defaultRating={3}/>
-        <Test/>
+       
     
 
   </React.StrictMode>
