@@ -2,6 +2,7 @@ import { useState, useEffect, useRef} from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
 import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 const key = 'cd762379';
 
@@ -118,24 +119,7 @@ function MovieDetails({selectedId, onCloseMovie, onWatchedMovie, watched}){
   console.log(isWatched);
 
 
- useEffect(function(){
-
-    function elCallBack(e){
-      if(e.code === "Escape"){
-          onCloseMovie();
-         
-        }
-
-      }
-      document.addEventListener('keydown', elCallBack)
-      
-
-      return function(){
-        document.removeEventListener('keydown',elCallBack)
-      }
-
-    }
-  ,[onCloseMovie]);
+ useKey('Escape',onCloseMovie);
 
   useEffect(function(){
      async function getMovieDetails(){
@@ -251,25 +235,28 @@ function NumResults({movies = []}){
 function Search({search,handleSearch}){
   const inputElement = useRef(null);
 
-useEffect(function(){
+// useEffect(function(){
  
-    function elCallBack(e){
+//     function elCallBack(e){
       
-        if(document.activeElement === inputElement.current)
-          return;
-        if(e.code === "Enter"){
-           inputElement.current.focus();
-        }
+//       
 
-      }
-      document.addEventListener('keydown', elCallBack)
+//       }
+//       document.addEventListener('keydown', elCallBack)
 
-      return function(){
-        document.removeEventListener('keydown',elCallBack)
-        handleSearch("");
-      }
+//       return function(){
+//         document.removeEventListener('keydown',elCallBack)
+//         handleSearch("");
+//       }
   
-},[handleSearch])
+// },[handleSearch])
+
+  useKey("Enter", function(){
+            if(document.activeElement === inputElement.current) return;
+            inputElement.current.focus();
+            handleSearch("");
+          }
+  );
 
   return(
       <input
