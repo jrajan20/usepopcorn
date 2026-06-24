@@ -1,4 +1,4 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect, useRef} from "react";
 import StarRating from "./StarRating";
 
 const tempMovieData = [
@@ -338,7 +338,27 @@ function NumResults({movies = []}){
   )
 }
 function Search({search,handleSearch}){
+  const inputElement = useRef(null);
 
+useEffect(function(){
+ 
+    function elCallBack(e){
+      
+        if(document.activeElement === inputElement.current)
+          return;
+        if(e.code === "Enter"){
+           inputElement.current.focus();
+        }
+
+      }
+      document.addEventListener('keydown', elCallBack)
+
+      return function(){
+        document.removeEventListener('keydown',elCallBack)
+        handleSearch("");
+      }
+  
+},[handleSearch])
 
   return(
       <input
@@ -347,6 +367,7 @@ function Search({search,handleSearch}){
           placeholder="Search movies..."
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
+          ref={inputElement}
         />
   )
 }
